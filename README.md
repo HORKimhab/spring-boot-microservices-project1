@@ -84,10 +84,10 @@ bash bin/kafka-console-producer.sh --bootstrap-server localhost:9092,localhost:9
 bash bin/kafka-console-producer.sh --bootstrap-server localhost:9092,localhost:9094 --topic new-topic --property "parse.key=true" --property "key.separator=:"
 
 bash bin/kafka-console-producer.sh \
-  --bootstrap-server localhost:9092,localhost:9094 \
+  --bootstrap-server localhost:9092 \
   --topic topic1 \
-  --command-property "parse.key=true" \
-  --command-property "key.separator=:"
+  --reader-property "parse.key=true" \
+  --reader-property "key.separator=:"
 
 <!-- Consume topic from beginning -->
 bin/kafka-console-consumer.sh \
@@ -99,3 +99,9 @@ bin/kafka-console-consumer.sh \
 bin/kafka-console-consumer.sh \
   --topic topic1 \
   --bootstrap-server localhost:9092
+
+bash bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092,localhost:9094 \
+  --topic topic1 \
+  --formatter-property print.key=true \
+  --formatter-property key.separator="        :       "
