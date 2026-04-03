@@ -22,3 +22,16 @@
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
 replay_pid*
+
+# Ignore all except 
+*
+!README.md
+!.gitignore
+
+# Allow specific config files
+
+# Allow directories (IMPORTANT)
+!*/
+
+# Allow specific config files
+!config/server*.properties
