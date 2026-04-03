@@ -35,3 +35,4 @@ replay_pid*
 
 # Allow specific config files
 !config/server*.properties
+!kafka.sh

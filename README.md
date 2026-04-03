@@ -48,6 +48,12 @@ bash bin/kafka-server-start.sh config/server-1.properties
 bash bin/kafka-server-start.sh config/server-2.properties
 bash bin/kafka-server-start.sh config/server-3.properties
 
+CLUSTER_ID=$(bin/kafka-storage.sh random-uuid)
+
+bin/kafka-storage.sh format -t $CLUSTER_ID -c config/server-1.properties
+bin/kafka-storage.sh format -t $CLUSTER_ID -c config/server-2.properties
+bin/kafka-storage.sh format -t $CLUSTER_ID -c config/server-3.properties
+
 <!-- Stop server -->
 bash bin/kafka-server-stop
 
