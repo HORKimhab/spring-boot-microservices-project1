@@ -41,6 +41,18 @@ function start_server() {
     bash "$KAFKA_HOME/bin/kafka-server-start.sh" "$CONFIG_FILE"
 }
 
+function stop_all_servers() {
+    echo "🛑 Stopping all Kafka servers..."
+    bash "$KAFKA_HOME/bin/kafka-server-stop.sh"
+    echo "✅ All servers stopped"
+}
+
+function list_topics(){
+    # bash bin/kafka-topics.sh --list --bootstrap-server localhost:9092
+    echo "✅ --- All list topics ---"
+    bash "$KAFKA_HOME/bin/kafka-topics.sh" --list --bootstrap-server localhost:9092
+}
+
 # --------- SCRIPT LOGIC ---------
 case "$1" in
     format)
@@ -55,8 +67,14 @@ case "$1" in
     start3)
         start_server 3
         ;;
+    stopall)
+        stop_all_servers
+        ;;
+    listtopic|topics)
+        list_topics
+        ;;
     *)
-        echo "Usage: $0 {format|start1|start2|start3}"
+        echo "Usage: $0 {format|start1|start2|start3|stopall|listtopic}"
         exit 1
         ;;
 esac

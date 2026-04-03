@@ -55,7 +55,7 @@ bin/kafka-storage.sh format -t $CLUSTER_ID -c config/server-2.properties
 bin/kafka-storage.sh format -t $CLUSTER_ID -c config/server-3.properties
 
 <!-- Stop server -->
-bash bin/kafka-server-stop
+bash bin/kafka-server-stop.sh
 
 <!-- Create topic -->
 bash bin/kafka-topics.sh --create --topic topic1 --partitions 3 --replication-factor 3 --bootstrap-server localhost:9092,localhost:9094
@@ -85,12 +85,17 @@ bash bin/kafka-console-producer.sh --bootstrap-server localhost:9092,localhost:9
 
 bash bin/kafka-console-producer.sh \
   --bootstrap-server localhost:9092,localhost:9094 \
-  --topic new-topic \
-  --producer-property "parse.key=true" \
-  --producer-property "key.separator=:"
+  --topic topic1 \
+  --command-property "parse.key=true" \
+  --command-property "key.separator=:"
 
 <!-- Consume topic from beginning -->
 bin/kafka-console-consumer.sh \
-  --topic new-topic \
+  --topic topic1 \
   --from-beginning \
+  --bootstrap-server localhost:9092
+
+<!-- Consume topic from latest -->
+bin/kafka-console-consumer.sh \
+  --topic topic1 \
   --bootstrap-server localhost:9092
