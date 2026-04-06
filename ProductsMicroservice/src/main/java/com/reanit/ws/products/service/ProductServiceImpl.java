@@ -44,13 +44,15 @@ public class ProductServiceImpl implements ProductService {
         // Register a completion callback to log the outcome without blocking the request thread.
         future.whenComplete((result, exception) -> {
             if(exception != null){
-                LOGGER.error("Failed to send message: " + exception.getMessage());
+                LOGGER.error("*** Failed to send message: " + exception.getMessage());
             }else {
-                LOGGER.info("Message sent successfully: " + result.getRecordMetadata());
+                LOGGER.info("*** Message sent successfully: " + result.getRecordMetadata());
             }
         });
 
         // future.join();
+
+        LOGGER.info("*** Returning product id");
 
         return productId;
     }
