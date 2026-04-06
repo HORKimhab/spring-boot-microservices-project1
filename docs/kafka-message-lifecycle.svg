@@ -1,0 +1,136 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="920" viewBox="0 0 1440 920" role="img" aria-labelledby="title desc">
+  <title id="title">Kafka Message Lifecycle</title>
+  <desc id="desc">Clean diagram showing the Kafka message lifecycle from producer to topic, broker storage, replication, consumer polling, offset commit, and retention.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f3ec; }
+      .title { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 38px; font-weight: 700; fill: #231f1c; }
+      .subtitle { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 18px; fill: #5d544d; }
+      .card-title { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 24px; font-weight: 700; fill: #2a241f; }
+      .card-text { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 16px; fill: #2f2924; }
+      .small { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 15px; fill: #3e3732; }
+      .step { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 16px; font-weight: 700; fill: #2b2520; }
+      .summary-title { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 22px; font-weight: 700; fill: #2a241f; }
+      .summary-text { font-family: "Helvetica Neue", Arial, sans-serif; font-size: 15px; fill: #3b342f; }
+      .producer { fill: #d9ebfb; stroke: #1174a7; stroke-width: 3; }
+      .topic { fill: #e9dff9; stroke: #7a57c5; stroke-width: 3; }
+      .partition { fill: #f8f3ff; stroke: #9b7add; stroke-width: 2.2; }
+      .broker { fill: #fdf0dc; stroke: #d07a1d; stroke-width: 3; }
+      .consumer { fill: #dff3e5; stroke: #2f9c59; stroke-width: 3; }
+      .offset { fill: #f8efd5; stroke: #d3a52c; stroke-width: 3; }
+      .retention { fill: #f2ece6; stroke: #8b7f74; stroke-width: 3; }
+      .summary { fill: #fff8ef; stroke: #eb9a3b; stroke-width: 2.5; }
+      .guide { stroke: #d8cec4; stroke-width: 2; stroke-dasharray: 6 8; }
+      .black { stroke: #24201c; stroke-width: 4; fill: none; marker-end: url(#arrowBlack); }
+      .orange { stroke: #d07a1d; stroke-width: 4; fill: none; marker-end: url(#arrowOrange); }
+      .green { stroke: #2f9c59; stroke-width: 4; fill: none; marker-end: url(#arrowGreen); }
+      .gray { stroke: #8b7f74; stroke-width: 3.5; fill: none; stroke-dasharray: 8 8; marker-end: url(#arrowGray); }
+    </style>
+    <marker id="arrowBlack" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M0,0 L14,7 L0,14 z" fill="#24201c"/>
+    </marker>
+    <marker id="arrowOrange" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M0,0 L14,7 L0,14 z" fill="#d07a1d"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M0,0 L14,7 L0,14 z" fill="#2f9c59"/>
+    </marker>
+    <marker id="arrowGray" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M0,0 L14,7 L0,14 z" fill="#8b7f74"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" width="1440" height="920"/>
+
+  <text class="title" x="56" y="58">Kafka Message Lifecycle</text>
+  <text class="subtitle" x="56" y="94">How a message moves from Producer to Kafka storage, then to Consumer processing and offset tracking.</text>
+
+  <rect class="producer" x="64" y="170" width="250" height="122" rx="18" ry="18"/>
+  <text class="card-title" x="127" y="214">Producer</text>
+  <text class="card-text" x="92" y="252">creates event record</text>
+  <text class="small" x="92" y="281">topic, key, value, headers</text>
+
+  <rect class="topic" x="394" y="118" width="360" height="242" rx="20" ry="20"/>
+  <text class="card-title" x="525" y="158">Topic</text>
+  <text class="card-text" x="437" y="194">Kafka chooses a partition</text>
+  <text class="small" x="437" y="219">by key, round-robin, or explicit choice</text>
+  <rect class="partition" x="435" y="254" width="84" height="72" rx="14" ry="14"/>
+  <rect class="partition" x="533" y="254" width="84" height="72" rx="14" ry="14"/>
+  <rect class="partition" x="631" y="254" width="84" height="72" rx="14" ry="14"/>
+  <text class="card-text" x="466" y="298">P0</text>
+  <text class="card-text" x="564" y="298">P1</text>
+  <text class="card-text" x="662" y="298">P2</text>
+
+  <rect class="broker" x="826" y="108" width="300" height="272" rx="20" ry="20"/>
+  <text class="card-title" x="929" y="152">Broker 1</text>
+  <text class="card-text" x="879" y="188">leader for selected partition</text>
+  <text class="small" x="870" y="214">stores records in append-only log</text>
+  <rect class="partition" x="885" y="240" width="182" height="100" rx="14" ry="14"/>
+  <text class="card-text" x="930" y="273">Partition Log</text>
+  <text class="small" x="915" y="300">offset 41</text>
+  <text class="small" x="915" y="322">offset 42</text>
+  <text class="small" x="915" y="344">offset 43 new message</text>
+
+  <rect class="broker" x="1180" y="100" width="190" height="126" rx="18" ry="18"/>
+  <text class="card-title" x="1228" y="144">Broker 2</text>
+  <text class="small" x="1230" y="183">follower replica</text>
+
+  <rect class="broker" x="1180" y="256" width="190" height="126" rx="18" ry="18"/>
+  <text class="card-title" x="1228" y="300">Broker 3</text>
+  <text class="small" x="1230" y="339">follower replica</text>
+
+  <rect class="retention" x="392" y="510" width="362" height="188" rx="18" ry="18"/>
+  <text class="card-title" x="496" y="552">Retention</text>
+  <text class="card-text" x="433" y="590">messages stay in Kafka</text>
+  <text class="small" x="434" y="618">until time-based or size-based</text>
+  <text class="small" x="488" y="643">retention removes them</text>
+  <text class="small" x="434" y="672">consumption does not delete records immediately</text>
+
+  <rect class="consumer" x="828" y="510" width="300" height="126" rx="18" ry="18"/>
+  <text class="card-title" x="925" y="554">Consumer</text>
+  <text class="card-text" x="885" y="589">polls assigned partition</text>
+  <text class="small" x="909" y="617">reads from current offset</text>
+
+  <rect class="consumer" x="1180" y="500" width="190" height="146" rx="18" ry="18" fill="#ebf7ef"/>
+  <text class="card-title" x="1208" y="542">Consumer Group</text>
+  <text class="small" x="1204" y="579">shares partitions</text>
+  <text class="small" x="1198" y="605">one consumer per partition</text>
+
+  <rect class="offset" x="828" y="712" width="300" height="104" rx="18" ry="18"/>
+  <text class="card-title" x="907" y="755">Offset Commit</text>
+  <text class="small" x="869" y="784">consumer stores progress after processing</text>
+
+  <line class="guide" x1="755" y1="118" x2="755" y2="815"/>
+  <line class="guide" x1="1152" y1="108" x2="1152" y2="815"/>
+
+  <path class="black" d="M314 231 L394 231"/>
+  <text class="step" x="318" y="205">1. Producer sends message to topic</text>
+
+  <path class="black" d="M754 231 L826 231"/>
+  <text class="step" x="772" y="205">2. Selected partition routes to leader broker</text>
+
+  <path class="gray" d="M933 340 L760 510"/>
+  <text class="step" x="676" y="474">3. Message stays stored in broker log</text>
+
+  <path class="orange" d="M1126 220 L1180 163"/>
+  <text class="step" x="1142" y="132">4. Replicate to follower</text>
+
+  <path class="orange" d="M1126 272 L1180 319"/>
+  <text class="step" x="1142" y="404">5. Replicate to follower</text>
+
+  <path class="green" d="M977 380 L977 510"/>
+  <text class="step" x="1010" y="454">6. Consumer polls records</text>
+
+  <path class="green" d="M1128 573 L1180 573"/>
+  <text class="step" x="1134" y="553">7. Group manages partition assignment</text>
+
+  <path class="green" d="M977 636 L977 712"/>
+  <text class="step" x="1011" y="685">8. Commit processed offset</text>
+
+  <path class="gray" d="M574 360 L574 510"/>
+  <text class="step" x="470" y="474">9. Message kept until retention expires</text>
+
+  <rect class="summary" x="58" y="828" width="1312" height="72" rx="16" ry="16"/>
+  <text class="summary-title" x="86" y="868">Lifecycle Summary</text>
+  <text class="summary-text" x="86" y="892">Producer creates record -&gt; Kafka picks partition -&gt; leader broker appends record and assigns offset -&gt; replicas copy it -&gt; consumer polls -&gt; offset is committed -&gt; Kafka removes old data later by retention policy.</text>
+</svg>
