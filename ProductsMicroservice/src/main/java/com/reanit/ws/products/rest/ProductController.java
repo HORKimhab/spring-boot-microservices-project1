@@ -7,9 +7,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.reanit.ws.products.service.ProductService;
+
 @RestController
 @RequestMapping("/products")
 public class ProductController {
+
+    ProductService productService; 
+
+    public ProductController(ProductService productService){
+        this.productService = productService;
+    }
     
     /**
      * Creates a new product from the request payload.
@@ -19,6 +27,9 @@ public class ProductController {
      */
     @PostMapping
     public ResponseEntity<String> createProduct(@RequestBody CreateProductRestModel product){
-        return ResponseEntity.status(HttpStatus.CREATED).body("");
+
+        String productId = productService.createProduct(product);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(productId);
     }
 }
