@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="760" viewBox="0 0 1280 760" role="img" aria-labelledby="title desc">
+  <title id="title">Kafka Producer Communication Style</title>
+  <desc id="desc">Diagram showing Kafka producer communication flow with synchronous and asynchronous acknowledgement paths.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f7f4ee; }
+      .panel { fill: #fffdfa; stroke: #3f3a34; stroke-width: 2; rx: 16; ry: 16; }
+      .broker { fill: #fff6e6; stroke: #a35a00; stroke-width: 2; rx: 14; ry: 14; }
+      .producer { fill: #e8f4ff; stroke: #14608f; stroke-width: 2; rx: 14; ry: 14; }
+      .client { fill: #edf8ea; stroke: #2a6a31; stroke-width: 2; rx: 14; ry: 14; }
+      .meta { fill: #f3ecff; stroke: #6240a8; stroke-width: 2; rx: 14; ry: 14; }
+      .text { font-family: Arial, Helvetica, sans-serif; fill: #1f1b18; font-size: 20px; }
+      .small { font-family: Arial, Helvetica, sans-serif; fill: #1f1b18; font-size: 17px; }
+      .label { font-family: Arial, Helvetica, sans-serif; fill: #1f1b18; font-size: 18px; font-weight: bold; }
+      .title { font-family: Arial, Helvetica, sans-serif; fill: #1f1b18; font-size: 30px; font-weight: bold; }
+      .sync { stroke: #176b87; stroke-width: 4; fill: none; marker-end: url(#arrow); }
+      .async { stroke: #bb4d00; stroke-width: 4; fill: none; stroke-dasharray: 10 8; marker-end: url(#arrowWarm); }
+      .return { stroke: #2a6a31; stroke-width: 4; fill: none; marker-end: url(#arrowGreen); }
+      .guide { stroke: #8c847c; stroke-width: 2; stroke-dasharray: 6 8; }
+    </style>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#176b87"/>
+    </marker>
+    <marker id="arrowWarm" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#bb4d00"/>
+    </marker>
+    <marker id="arrowGreen" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#2a6a31"/>
+    </marker>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1280" height="760"/>
+  <text class="title" x="60" y="58">Kafka Producer Communication Style</text>
+  <text class="text" x="60" y="92">The producer discovers metadata, selects a partition leader, sends records, and receives acknowledgements.</text>
+
+  <rect class="client" x="70" y="150" width="210" height="90"/>
+  <text class="label" x="118" y="188">Application</text>
+  <text class="small" x="104" y="217">creates event record</text>
+
+  <rect class="producer" x="350" y="130" width="250" height="130"/>
+  <text class="label" x="401" y="173">Kafka Producer</text>
+  <text class="small" x="382" y="204">serialize key and value</text>
+  <text class="small" x="387" y="228">batch and retry logic</text>
+
+  <rect class="meta" x="670" y="135" width="240" height="120"/>
+  <text class="label" x="718" y="176">Cluster Metadata</text>
+  <text class="small" x="719" y="206">topic partitions</text>
+  <text class="small" x="697" y="230">leaders and replicas</text>
+
+  <rect class="broker" x="970" y="110" width="220" height="120"/>
+  <text class="label" x="1023" y="153">Broker 1</text>
+  <text class="small" x="1020" y="183">bootstrap contact</text>
+  <text class="small" x="1005" y="207">may or may not be leader</text>
+
+  <rect class="broker" x="970" y="300" width="220" height="140"/>
+  <text class="label" x="1003" y="344">Leader Broker</text>
+  <text class="small" x="1016" y="374">partition append</text>
+  <text class="small" x="1018" y="398">acks after write</text>
+  <text class="small" x="991" y="422">or after replica confirmation</text>
+
+  <rect class="panel" x="70" y="500" width="1140" height="180"/>
+  <text class="label" x="95" y="540">Synchronous vs Asynchronous</text>
+  <text class="small" x="95" y="578">Synchronous: application waits for acknowledgement before continuing.</text>
+  <text class="small" x="95" y="610">Asynchronous: application continues immediately and handles success or failure in a callback or future.</text>
+  <text class="small" x="95" y="642">Common durability settings: acks=0, acks=1, acks=all.</text>
+
+  <line class="guide" x1="175" y1="260" x2="175" y2="500"/>
+  <line class="guide" x1="475" y1="260" x2="475" y2="500"/>
+  <line class="guide" x1="790" y1="255" x2="790" y2="500"/>
+  <line class="guide" x1="1080" y1="230" x2="1080" y2="500"/>
+
+  <path class="sync" d="M 280 195 C 310 195, 320 195, 350 195"/>
+  <text class="small" x="290" y="180">1. send(topic, key, value)</text>
+
+  <path class="sync" d="M 600 175 C 630 175, 640 175, 670 175"/>
+  <text class="small" x="602" y="156">2. fetch metadata</text>
+
+  <path class="return" d="M 910 215 C 880 215, 860 215, 835 215"/>
+  <text class="small" x="827" y="198">leaders returned</text>
+
+  <path class="sync" d="M 600 235 C 760 270, 860 315, 970 355"/>
+  <text class="small" x="705" y="304">3. send batch to partition leader</text>
+
+  <path class="return" d="M 970 382 C 850 430, 670 438, 475 438"/>
+  <text class="small" x="648" y="421">4. broker acknowledgement</text>
+
+  <path class="return" d="M 475 455 C 380 455, 310 455, 175 455"/>
+  <text class="small" x="258" y="438">5a. synchronous caller resumes after ack</text>
+
+  <path class="async" d="M 175 470 C 290 510, 365 520, 475 520"/>
+  <text class="small" x="208" y="505">5b. asynchronous caller continues immediately</text>
+
+  <path class="async" d="M 475 540 C 650 560, 820 560, 970 520"/>
+  <text class="small" x="594" y="545">completion handled later by callback or future</text>
+</svg>

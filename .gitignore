@@ -7,6 +7,9 @@
 # BlueJ files
 *.ctxt
 
+# Mac files 
+.DS_Store
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
@@ -23,16 +26,22 @@
 hs_err_pid*
 replay_pid*
 
-# Ignore all except 
-*
+# Ignore Kafka 
 !README.md
 !.gitignore
-
-# Allow specific config files
-
-# Allow directories (IMPORTANT)
-!*/
+bin
+config
+docs
+libs
+licenses
+logs
+site-docs
+LICENSE
+NOTICE
 
 # Allow specific config files
 !config/server*.properties
 !kafka.sh
+!docs/
+!docs/*.md
+!docs/*.svg

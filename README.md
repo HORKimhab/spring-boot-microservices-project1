@@ -105,3 +105,16 @@ bash bin/kafka-console-consumer.sh \
   --topic topic1 \
   --formatter-property print.key=true \
   --formatter-property key.separator="        :       "
+
+
+## Kafka Producer 
+
+- Publish/Produce Messages 
+- Serialize to binary format
+- Specify topic name
+- Specify topic partition 
+
+  ### Communication Style
+
+  - Synchronous
+  - Asynchronous
