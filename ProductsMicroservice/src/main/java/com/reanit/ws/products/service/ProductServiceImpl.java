@@ -2,7 +2,6 @@ package com.reanit.ws.products.service;
 
 import java.math.BigDecimal;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +23,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override 
-    public String createProduct(CreateProductRestModel productRestModel){
+    public String createProduct(CreateProductRestModel productRestModel) throws Exception {
 
         String productId = UUID.randomUUID().toString();
         String title = productRestModel.getTitle(); 
@@ -38,17 +37,21 @@ public class ProductServiceImpl implements ProductService {
 
         // Kafka send is asynchronous. The returned CompletableFuture completes when the broker
         // acknowledges the message or when the send fails.
-        CompletableFuture<SendResult<String, ProductCreatedEvent>> future = 
-            kafkaTemplate.send("product-created-events-topic", productId, productCreatedEvent);
+        // CompletableFuture<SendResult<String, ProductCreatedEvent>> future = 
+        //     kafkaTemplate.send("product-created-events-topic", productId, productCreatedEvent);
 
-        // Register a completion callback to log the outcome without blocking the request thread.
-        future.whenComplete((result, exception) -> {
-            if(exception != null){
-                LOGGER.error("*** Failed to send message: " + exception.getMessage());
-            }else {
-                LOGGER.info("*** Message sent successfully: " + result.getRecordMetadata());
-            }
-        });
+        // // Register a completion callback to log the outcome without blocking the request thread.
+        // future.whenComplete((result, exception) -> {
+        //     if(exception != null){
+        //         LOGGER.error("*** Failed to send message: " + exception.getMessage());
+        //     }else {
+        //         LOGGER.info("*** Message sent successfully: " + result.getRecordMetadata());
+        //     }
+        // });
+
+        SendResult<String, ProductCreatedEvent> result = 
+            kafkaTemplate.send("product-created-events-topic", productId, productCreatedEvent)
+                .get();
 
         // future.join();
 

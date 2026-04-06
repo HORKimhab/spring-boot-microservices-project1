@@ -128,6 +128,12 @@ bash bin/kafka-console-consumer.sh \
   --formatter-property print.key=true \
   --formatter-property key.separator="        :       "
 
+bash bin/kafka-console-consumer.sh \
+  --topic product-created-events-topic \
+  --bootstrap-server localhost:9092,localhost:9094 \
+  --formatter-property print.key=true \
+  --formatter-property key.separator="        :       "
+
 
 ## Kafka Producer 
 
