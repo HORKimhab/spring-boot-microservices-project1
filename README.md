@@ -3,7 +3,20 @@ Apache Kafka for Event-Driven Spring Boot Microservices
 
 ## Setup
 
+- bash kafka.sh format 
 
+<!-- Start Kafka instances 1–3 manually from terminal -->
+Run the following commands:
+
+- bash kafka.sh start1
+- bash kafka.sh start2
+- bash kafka.sh start3
+
+Start spring boot 
+- cd ProductsMicroservice && bash run 
+
+List specific topic 'product-created-events-topic'
+- bash bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic product-created-events-topic
 
 ## Resource
 
@@ -77,7 +90,12 @@ bash bin/kafka-topics.sh --describe  --bootstrap-server localhost:9092
 
  Replicas: 2,3,1 is Broker ID
 
-<!-- Describe topic -->
+bash bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic {topicName}
+
+bash bin/kafka-topics.sh --bootstrap-server localhost:9092 --describe --topic product-created-events-topic
+
+
+<!-- Delete topic -->
 bash bin/kafka-topics.sh --delete --topic topic1 --bootstrap-server localhost:9092
 
 <!-- Send message -->
