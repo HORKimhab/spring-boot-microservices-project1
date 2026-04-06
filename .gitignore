@@ -29,12 +29,15 @@ replay_pid*
 # Ignore Kafka 
 !README.md
 !.gitignore
-bin
-config
-docs
-libs
+logs/*
+!logs/.gitignore
+
+# bin
+# config
+# docs
+# libs
 licenses
-logs
+
 site-docs
 LICENSE
 NOTICE
