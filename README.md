@@ -210,3 +210,5 @@ bash bin/kafka-configs.sh \
   --add-config min.insync.replicas=2
 
 bash bin/kafka-topics.sh --delete --topic __consumer_offsets --bootstrap-server localhost:9092
+
+- 08. Trying how Kafka producer retries work, bash kafka.sh start1 
