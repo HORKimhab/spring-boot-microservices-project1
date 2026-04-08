@@ -60,7 +60,7 @@ public class ProductServiceImpl implements ProductService {
         */
 
         SendResult<String, ProductCreatedEvent> result = 
-            kafkaTemplate.send("product-created-events-topic", productId, productCreatedEvent)
+            kafkaTemplate.send("topic2", productId, productCreatedEvent)
                 .get();
 
         // future.join();
