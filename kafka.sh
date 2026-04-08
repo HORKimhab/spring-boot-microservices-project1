@@ -44,6 +44,7 @@ function start_server() {
 function stop_all_servers() {
     echo "🛑 Stopping all Kafka servers..."
     bash "$KAFKA_HOME/bin/kafka-server-stop.sh"
+    kill -9 $(lsof -ti :9093)
     echo "✅ All servers stopped"
 }
 
