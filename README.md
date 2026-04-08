@@ -79,6 +79,9 @@ bash bin/kafka-topics.sh --create --topic topic1 --partitions 3 --replication-fa
 
 bash bin/kafka-topics.sh --create --topic topic2 --partitions 3 --replication-factor 3 --bootstrap-server localhost:9092,localhost:9094
 
+<!-- Create topic, min.insync.replicas -->
+bash bin/kafka-topics.sh --create --topic insync-topic --partitions 3 --replication-factor 3 --bootstrap-server localhost:9092 --config min.insync.replicas=2
+
 <!-- Delete logs -->
 rm -rf /tmp/server-{1,2,3}/kraft-combined-logs
 
@@ -189,3 +192,14 @@ spring.kafka.producer.proerties.linger.ms=0
       The default value is 30000 ms. 
 -->
 spring.kafka.producer.request.timeout.ms=30000
+
+<!-- Config min.insync.replicas -->
+
+bash bin/kafka-configs.sh \
+  --bootstrap-server localhost:9092 \
+  --alter \
+  --entity-type topics \
+  --entity-name topic2 \
+  --add-config min.insync.replicas=2
+
+bash bin/kafka-topics.sh --delete --topic __consumer_offsets --bootstrap-server localhost:9092
