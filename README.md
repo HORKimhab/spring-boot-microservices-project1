@@ -141,8 +141,51 @@ bash bin/kafka-console-consumer.sh \
 - Serialize to binary format
 - Specify topic name
 - Specify topic partition 
+- No response - if the producer is configured with acks=0 
+- Acknowledgement (ACK) of Successful Storage 
+- Non-Retryable Error - A permanent problem that is unlikely to be resolved by retrying the spend operation
 
   ### Communication Style
 
   - Synchronous
   - Asynchronous
+
+## Note
+
+<!-- Waits for an acknowledgement from all brokers -->
+- spring.kafka.producer.acks=all
+- replication-factor 5 
+- config min.insync.replicas=2
+
+<!-- Waits for an acknowledgement from a a leader broker only -->
+- spring.kafka.producer.acks=1
+
+<!-- Does not wait for an acknowledgement -->
+- spring.kafka.producer.acks=0
+
+<!--  How many times Kafka Producer will try to send a message before marking it as failed.  
+      Default value is 2147483647.
+-->
+- spring.kafka.producer.retries=10
+
+<!--  How long the producer will wait before attempting to retry a failed request.  
+      Default value is 100 ms. 
+-->
+- spring.kafka.producer.properties.retry.backoff.ms=1000
+
+<!--  The maximum time Producer can spend trying to deliver the message. 
+      Default value is 120000 ms (2 mintues).
+-->
+- spring.kafka.producer.properties.delivery.timeout.ms=120000 
+
+delivery.timeout.ms >= linger.ms + request.timeout.ms 
+
+<!--  The maximum time in milliseconds that the producer will wait and buffer data before sending
+      a batch of message. The default value is 0. 
+-->
+spring.kafka.producer.proerties.linger.ms=0
+
+<!--  The maximum time to wait for a response from the broker after sending a request. 
+      The default value is 30000 ms. 
+-->
+spring.kafka.producer.request.timeout.ms=30000
