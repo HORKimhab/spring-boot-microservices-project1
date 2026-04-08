@@ -3,6 +3,7 @@ package com.reanit.ws.products.service;
 import java.math.BigDecimal;
 import java.util.UUID;
 
+import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.core.KafkaTemplate;
@@ -49,11 +50,26 @@ public class ProductServiceImpl implements ProductService {
         //     }
         // });
 
+        LOGGER.info("Before publishing a ProductCreatedEvent");
+
+        /* 
+            - Topic name
+            - Partition 
+            - Offset
+            - Timestamp
+        */
+
         SendResult<String, ProductCreatedEvent> result = 
             kafkaTemplate.send("product-created-events-topic", productId, productCreatedEvent)
                 .get();
 
         // future.join();
+
+        RecordMetadata recordMetadata = result.getRecordMetadata();
+
+        LOGGER.info("Partition: " + recordMetadata.partition());
+        LOGGER.info("Topic: " + recordMetadata.topic());
+        LOGGER.info("Offset: " + recordMetadata.offset());
 
         LOGGER.info("*** Returning product id");
 
