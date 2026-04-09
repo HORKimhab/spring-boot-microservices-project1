@@ -212,3 +212,76 @@ bash bin/kafka-configs.sh \
 bash bin/kafka-topics.sh --delete --topic __consumer_offsets --bootstrap-server localhost:9092
 
 - 08. Trying how Kafka producer retries work, bash kafka.sh start1 
+
+## Kafka Consumer
+
+- A Kafka consumer reads records from a topic by polling Kafka brokers.
+- Kafka tracks consumer progress with offsets, stored per consumer group.
+- If multiple consumers use the same group id, Kafka distributes partitions across them.
+- If different consumer groups read the same topic, each group receives its own copy of the stream.
+
+### Consume Messages From This Project
+
+Current project behavior:
+
+- `KafkaConfig#createTopic()` creates `product-created-events-topic`
+- `ProductServiceImpl#createProduct()` currently publishes to `topic2`
+
+Consume from the topic currently used by the Spring Boot service:
+
+```bash
+bash bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092,localhost:9094 \
+  --topic topic2 \
+  --from-beginning
+```
+
+Consume and show message keys:
+
+```bash
+bash bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092,localhost:9094 \
+  --topic topic2 \
+  --from-beginning \
+  --property print.key=true \
+  --property key.separator=" : "
+```
+
+Consume from `product-created-events-topic` if you switch the producer back to that topic:
+
+```bash
+bash bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092,localhost:9094 \
+  --topic product-created-events-topic \
+  --from-beginning \
+  --property print.key=true \
+  --property key.separator=" : "
+```
+
+### Consumer Group Example
+
+Read with a named consumer group:
+
+```bash
+bash bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092,localhost:9094 \
+  --topic topic2 \
+  --group product-created-events-consumer-group \
+  --from-beginning
+```
+
+Describe the consumer group and inspect committed offsets:
+
+```bash
+bash bin/kafka-consumer-groups.sh \
+  --bootstrap-server localhost:9092,localhost:9094 \
+  --describe \
+  --group product-created-events-consumer-group
+```
+
+### Notes
+
+- `--from-beginning` replays existing records only when the consumer group has no committed offset yet.
+- Once offsets are committed for a group, the next run resumes from the last committed position.
+- Offsets are stored in Kafka, typically in the `__consumer_offsets` internal topic.
+- With 3 partitions, Kafka can actively assign work to up to 3 consumers in the same group for that topic.
