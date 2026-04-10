@@ -6,6 +6,8 @@ import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
+import com.reanit.ws.core.ProductCreatedEvent;
+
 @Component
 @KafkaListener(
     topics = "${spring.kafka.consumer.group-id}"

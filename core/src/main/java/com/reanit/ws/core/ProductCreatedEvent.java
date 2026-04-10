@@ -1,4 +1,4 @@
-package com.reanit.ws.products.service;
+package com.reanit.ws.core;
 
 import java.math.BigDecimal;
 
