@@ -258,6 +258,15 @@ bash bin/kafka-console-consumer.sh \
   --property key.separator=" : "
 ```
 
+```bash
+# Console producer
+bash bin/kafka-console-producer.sh \
+  --bootstrap-server localhost:9092,localhost:9094 \
+  --topic product-created-events-topic \
+  --reader-property "parse.key=true" \
+  --reader-property "key.separator=:"
+```
+
 ### Consumer Group Example
 
 Read with a named consumer group:

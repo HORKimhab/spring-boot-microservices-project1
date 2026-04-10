@@ -34,6 +34,11 @@ public class KafkaConsumerConfiguration {
         config.put(JacksonJsonDeserializer.TRUSTED_PACKAGES, trustedPackage);
         config.put(ConsumerConfig.GROUP_ID_CONFIG, consumerGroupId);
 
+        // Prevent deserialization errors from causing infinite loops
+        // config.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 30_000);  // 0.5 min
+        // config.put(ConsumerConfig.SESSION_TIMEOUT_MS_CONFIG, 30_000);     // 30 sec
+        // config.put(ConsumerConfig.HEARTBEAT_INTERVAL_MS_CONFIG, 10_000);  // 10 sec
+
         return new DefaultKafkaConsumerFactory<>(config);  
     }
 
