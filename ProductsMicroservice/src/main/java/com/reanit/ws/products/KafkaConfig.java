@@ -18,6 +18,12 @@ import com.reanit.ws.core.ProductCreatedEvent;
 @Configuration
 public class KafkaConfig {
 
+    @Value("${app.kafka.topics.product-created}")
+    private String productCreatedTopic;
+
+    @Value("${app.kafka.topics.product-created-secondary}")
+    private String secondaryProductCreatedTopic;
+
     @Value("${spring.kafka.producer.bootstrap-servers}")
     private String bootstrapServers;
 
@@ -119,8 +125,17 @@ public class KafkaConfig {
      * @return NewTopic configuration for product-created-events-topic
      */
     @Bean
-    NewTopic createTopic(){
-        return TopicBuilder.name("product-created-events-topic")
+    NewTopic productCreatedTopic(){
+        return TopicBuilder.name(productCreatedTopic)
+            .partitions(3)
+            .replicas(3)
+            .configs(Map.of("min.insync.replicas", "2"))
+            .build();
+    }
+
+    @Bean
+    NewTopic secondaryProductCreatedTopic(){
+        return TopicBuilder.name(secondaryProductCreatedTopic)
             .partitions(3)
             .replicas(3)
             .configs(Map.of("min.insync.replicas", "2"))

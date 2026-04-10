@@ -10,7 +10,7 @@ import com.reanit.ws.core.ProductCreatedEvent;
 
 @Component
 @KafkaListener(
-    topics = "${spring.kafka.consumer.group-id}"
+    topics = "${spring.kafka.consumer.product-created-topic}"
 )
 public class ProductCreatedEventHandler {
 
@@ -18,7 +18,6 @@ public class ProductCreatedEventHandler {
 
     @KafkaHandler
     public void handle(ProductCreatedEvent productCreatedEvent) {
-
         LOGGER.info("Received a new event: " + productCreatedEvent.getTitle());
     }
 }

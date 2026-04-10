@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.apache.kafka.clients.producer.RecordMetadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -17,11 +18,19 @@ import com.reanit.ws.products.rest.CreateProductRestModel;
 public class ProductServiceImpl implements ProductService {
 
     KafkaTemplate<String, ProductCreatedEvent> kafkaTemplate; 
+    private final String productCreatedTopic;
+    private final String secondaryProductCreatedTopic;
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
 
-    public ProductServiceImpl(KafkaTemplate<String, ProductCreatedEvent> kafkaTemplate){
+    public ProductServiceImpl(
+        KafkaTemplate<String, ProductCreatedEvent> kafkaTemplate,
+        @Value("${app.kafka.topics.product-created}") String productCreatedTopic,
+        @Value("${app.kafka.topics.product-created-secondary}") String secondaryProductCreatedTopic
+    ){
         this.kafkaTemplate = kafkaTemplate;
+        this.productCreatedTopic = productCreatedTopic;
+        this.secondaryProductCreatedTopic = secondaryProductCreatedTopic;
     }
 
     @Override 
@@ -61,16 +70,24 @@ public class ProductServiceImpl implements ProductService {
         */
 
         SendResult<String, ProductCreatedEvent> result = 
-            kafkaTemplate.send("topic2", productId, productCreatedEvent)
+            kafkaTemplate.send(productCreatedTopic, productId, productCreatedEvent)
+                .get();
+
+        SendResult<String, ProductCreatedEvent> secondaryResult =
+            kafkaTemplate.send(secondaryProductCreatedTopic, productId, productCreatedEvent)
                 .get();
 
         // future.join();
 
         RecordMetadata recordMetadata = result.getRecordMetadata();
+        RecordMetadata secondaryRecordMetadata = secondaryResult.getRecordMetadata();
 
         LOGGER.info("Partition: " + recordMetadata.partition());
         LOGGER.info("Topic: " + recordMetadata.topic());
         LOGGER.info("Offset: " + recordMetadata.offset());
+        LOGGER.info("Secondary partition: " + secondaryRecordMetadata.partition());
+        LOGGER.info("Secondary topic: " + secondaryRecordMetadata.topic());
+        LOGGER.info("Secondary offset: " + secondaryRecordMetadata.offset());
 
         LOGGER.info("*** Returning product id");
 

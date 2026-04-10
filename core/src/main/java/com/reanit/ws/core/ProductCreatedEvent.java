@@ -9,6 +9,9 @@ public class ProductCreatedEvent {
     private BigDecimal price; 
     private Integer quantity; 
 
+    public ProductCreatedEvent() {
+    }
+
     public ProductCreatedEvent(String productId, String title, BigDecimal price, Integer quantity){
         this.productId = productId;
         this.title = title;
