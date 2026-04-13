@@ -23,7 +23,7 @@ import com.reanit.ws.emailnotification.error.RetryableException;
 public class ProductCreatedEventHandler {
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
-    private final RestTemplate restTemplate;
+    private RestTemplate restTemplate;
 
     public ProductCreatedEventHandler(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
@@ -35,7 +35,7 @@ public class ProductCreatedEventHandler {
         // if(true) throw new NotRetryableException("An error took place. No need to conusme this message again.");
         LOGGER.info("Received a new event: " + productCreatedEvent.getTitle());
 
-        String requestUrl = "http://localhost:8082";
+        String requestUrl = "http://localhost:8081";
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.GET, null, String.class);
