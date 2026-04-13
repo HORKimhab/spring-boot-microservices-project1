@@ -256,6 +256,21 @@ bash bin/kafka-console-consumer.sh \
   --from-beginning \
   --property print.key=true \
   --property key.separator=" : "
+
+# List dead letter topic
+bash bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092,localhost:9094 \
+  --topic product-created-events-topic.DLT \
+  --from-beginning \
+  --formatter-property print.key=true \
+  --formatter-property print.value=true
+
+bash bin/kafka-console-consumer.sh \
+  --bootstrap-server localhost:9092,localhost:9094 \
+  --topic product-created-events-topic-dlt \
+  --from-beginning \
+  --formatter-property print.key=true \
+  --formatter-property print.value=true
 ```
 
 ```bash
