@@ -109,4 +109,5 @@ else
 fi
 
 # Forward any remaining arguments and set server port
+# Run debug -X or --debug
 $MVN_CMD "$@" -Dspring-boot.run.arguments="--server.port=$PORT"

@@ -7,6 +7,7 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.stereotype.Component;
 
 import com.reanit.ws.core.ProductCreatedEvent;
+import com.reanit.ws.emailnotification.error.NotRetryableException;
 
 @Component
 @KafkaListener(
@@ -18,6 +19,7 @@ public class ProductCreatedEventHandler {
 
     @KafkaHandler
     public void handle(ProductCreatedEvent productCreatedEvent) {
+        if(true) throw new NotRetryableException("An error took place. No need to conusme this message again.");
         LOGGER.info("Received a new event: " + productCreatedEvent.getTitle());
     }
 }
