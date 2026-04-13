@@ -5,7 +5,16 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$SCRIPT_DIR"
 
-PORT=8082
+if [[ -f .env ]]; then
+    # Load variables from .env so the run script matches Spring config defaults.
+    set -a
+    # shellcheck disable=SC1091
+    source .env
+    set +a
+fi
+
+
+PORT="${PORT:-8081}"
 
 show_help() {
     cat <<'EOF'

@@ -35,7 +35,7 @@ public class ProductCreatedEventHandler {
         // if(true) throw new NotRetryableException("An error took place. No need to conusme this message again.");
         LOGGER.info("Received a new event: " + productCreatedEvent.getTitle());
 
-        String requestUrl = "http://localhost:8081";
+        String requestUrl = "http://localhost:8081/response/200";
 
         try {
             ResponseEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.GET, null, String.class);
