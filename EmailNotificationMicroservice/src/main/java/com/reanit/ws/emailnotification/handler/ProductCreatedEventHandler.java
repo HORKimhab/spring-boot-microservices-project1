@@ -34,7 +34,7 @@ public class ProductCreatedEventHandler {
     // @SuppressWarnings("UseSpecificCatch")
     public void handle(ProductCreatedEvent productCreatedEvent) {
         // if(true) throw new NotRetryableException("An error took place. No need to conusme this message again.");
-        LOGGER.info("Received a new event: " + productCreatedEvent.getTitle());
+        LOGGER.info("Received a new event: " + productCreatedEvent.getTitle() + " with productId: " + productCreatedEvent.getProductId());
 
         String requestUrl = "http://localhost:8081/response/200";
 
