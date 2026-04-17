@@ -19,6 +19,7 @@ import com.reanit.ws.emailnotification.error.RetryableException;
 @Component
 @KafkaListener(
         topics = "${spring.kafka.consumer.product-created-topic}"
+        // groupId = "${spring.kafka.consumer.group-id}"
 )
 public class ProductCreatedEventHandler {
 
