@@ -3,9 +3,11 @@ package com.reanit.ws.emailnotification.io;
 import java.io.Serializable;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
+@Entity
 public class ProcessedEventEntity implements Serializable {
 
     private static final long serialVersionUID = 7428915631042789156L;

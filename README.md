@@ -309,3 +309,4 @@ bash bin/kafka-consumer-groups.sh \
 - Once offsets are committed for a group, the next run resumes from the last committed position.
 - Offsets are stored in Kafka, typically in the `__consumer_offsets` internal topic.
 - With 3 partitions, Kafka can actively assign work to up to 3 consumers in the same group for that topic.
+- Access h2-console-db: http://localhost:{Port_Number}/h2-console
