@@ -49,6 +49,13 @@ public class ProductCreatedEventHandler {
         // if(true) throw new NotRetryableException("An error took place. No need to conusme this message again.");
         LOGGER.info("Received a new event: " + productCreatedEvent.getTitle() + " with productId: " + productCreatedEvent.getProductId());
 
+        // Check if this message was already processed before 
+        ProcessedEventEntity existingRecord = processedEventRepository.findByMessageId(messageId);
+
+        if(existingRecord != null){
+            LOGGER.info("Found a dupblicate message id: {} ", existingRecord.getMessageId());
+        }
+
         String requestUrl = "http://localhost:8081/response/200";
 
         try {
