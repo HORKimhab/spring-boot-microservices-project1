@@ -1,4 +1,4 @@
-package com.reanit.ws.emailnotification;
+package com.reanit.ws.emailnotification.io;
 
 import java.io.Serializable;
 
