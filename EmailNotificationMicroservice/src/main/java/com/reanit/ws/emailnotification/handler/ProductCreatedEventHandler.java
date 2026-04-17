@@ -2,6 +2,7 @@ package com.reanit.ws.emailnotification.handler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,10 @@ import org.springframework.web.client.RestTemplate;
 import com.reanit.ws.core.ProductCreatedEvent;
 import com.reanit.ws.emailnotification.error.NotRetryableException;
 import com.reanit.ws.emailnotification.error.RetryableException;
+import com.reanit.ws.emailnotification.io.ProcessedEventEntity;
+import com.reanit.ws.emailnotification.io.ProcessedEventRepository;
+
+import jakarta.transaction.Transactional;
 
 @Component
 @KafkaListener(
@@ -28,11 +33,14 @@ public class ProductCreatedEventHandler {
 
     private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
     private RestTemplate restTemplate;
+    private final ProcessedEventRepository processedEventRepository; 
 
-    public ProductCreatedEventHandler(RestTemplate restTemplate) {
+    public ProductCreatedEventHandler(RestTemplate restTemplate, ProcessedEventRepository processedEventRepository) {
         this.restTemplate = restTemplate;
+        this.processedEventRepository = processedEventRepository;
     }
 
+    @Transactional
     @KafkaHandler
     // @SuppressWarnings("UseSpecificCatch")
     public void handle(@Payload ProductCreatedEvent productCreatedEvent, 
@@ -60,5 +68,11 @@ public class ProductCreatedEventHandler {
             throw new NotRetryableException(ex);
         }
 
+        // Save a unique message id in database table 
+        try {
+            processedEventRepository.save(new ProcessedEventEntity(messageId, productCreatedEvent.getProductId()));
+        } catch (DataIntegrityViolationException ex) {
+            throw new NotRetryableException(ex);
+        }
     }
 }
