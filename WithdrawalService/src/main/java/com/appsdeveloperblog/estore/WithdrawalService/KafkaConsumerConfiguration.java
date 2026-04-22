@@ -24,8 +24,8 @@ import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;
 import org.springframework.util.backoff.FixedBackOff;
 
-import com.appsdeveloperblog.payments.ws.core.error.NotRetryableException;
-import com.appsdeveloperblog.payments.ws.core.error.RetryableException;
+import com.reanit.ws.core.error.NotRetryableException;
+import com.reanit.ws.core.error.RetryableException;
 
 @Configuration
 public class KafkaConsumerConfiguration {

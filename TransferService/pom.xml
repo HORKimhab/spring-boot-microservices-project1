@@ -25,11 +25,19 @@
 			<groupId>org.springframework.kafka</groupId>
 			<artifactId>spring-kafka</artifactId>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>com.appsdeveloperblog.payments.ws</groupId>
 			<artifactId>core</artifactId>
 			<version>0.0.1-SNAPSHOT</version>
-		</dependency>
+		</dependency> -->
+
+		<!-- This is from parent repository -->
+        <dependency>
+            <groupId>com.reanit.ws</groupId>
+            <artifactId>core</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
 		<dependency>
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>

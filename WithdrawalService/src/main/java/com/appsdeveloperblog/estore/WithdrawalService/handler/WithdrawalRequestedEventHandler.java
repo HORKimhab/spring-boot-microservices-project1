@@ -7,7 +7,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
-import com.appsdeveloperblog.payments.ws.core.events.WithdrawalRequestedEvent;
+import com.reanit.ws.core.WithdrawalRequestedEvent;
+
 
 @Component
 @KafkaListener(topics = "withdraw-money-topic", containerFactory = "kafkaListenerContainerFactory")
