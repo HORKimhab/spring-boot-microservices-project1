@@ -17,7 +17,8 @@ import com.reanit.ws.core.DepositRequestedEvent;
 import com.reanit.ws.core.WithdrawalRequestedEvent;
 
 
-@Transactional(value="kafkaTransactionManager")
+// @Transactional(value="kafkaTransactionManager", rollbackFor={ TransferServiceException.class, ConnectException.class }, noRollbackFor={SpecificException.class })
+@Transactional
 @Service
 public class TransferServiceImpl implements TransferService {
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
