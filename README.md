@@ -220,6 +220,33 @@ bash bin/kafka-topics.sh --delete --topic __consumer_offsets --bootstrap-server 
 - If multiple consumers use the same group id, Kafka distributes partitions across them.
 - If different consumer groups read the same topic, each group receives its own copy of the stream.
 
+## TransferService Transaction Behavior
+
+When `POST /transfers` is handled by `TransferService`, both Kafka sends run inside a Kafka transaction.
+
+Current flow in `TransferService`:
+
+1. Send `WithdrawalRequestedEvent` to `withdraw-money-topic`
+2. Call remote service
+3. Send `DepositRequestedEvent` to `deposit-money-topic`
+
+If the request fails before the method completes successfully, the Kafka transaction is rolled back.
+
+That means:
+
+- `WithdrawalService` will not receive the withdrawal event anymore
+- `DepositService` will not receive the deposit event
+- Kafka may show producer transaction logs, but consumers using `READ_COMMITTED` will not see rolled-back records
+
+This is expected with the current configuration because:
+
+- `TransferService` uses a transactional Kafka producer
+- `WithdrawalService` uses `spring.kafka.consumer.isolation-level=READ_COMMITTED`
+
+So if `POST /transfers` fails, `Received a new withdrawal event` should not appear in `WithdrawalService` logs.
+
+Only when the transfer flow completes and the Kafka transaction commits will `WithdrawalService` receive the event.
+
 ### Consume Messages From This Project
 
 Current project behavior:
@@ -310,3 +337,4 @@ bash bin/kafka-consumer-groups.sh \
 - Offsets are stored in Kafka, typically in the `__consumer_offsets` internal topic.
 - With 3 partitions, Kafka can actively assign work to up to 3 consumers in the same group for that topic.
 - Access h2-console-db: http://localhost:{Port_Number}/h2-console
+- Continue: 15.09 (1.48)
