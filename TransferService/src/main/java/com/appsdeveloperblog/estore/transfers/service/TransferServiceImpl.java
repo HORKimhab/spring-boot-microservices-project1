@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import com.appsdeveloperblog.estore.transfers.error.TransferServiceException;
@@ -16,8 +15,6 @@ import com.appsdeveloperblog.estore.transfers.model.TransferRestModel;
 import com.reanit.ws.core.DepositRequestedEvent;
 import com.reanit.ws.core.WithdrawalRequestedEvent;
 
-
-@Transactional("kafkaTransactionManager")
 @Service
 public class TransferServiceImpl implements TransferService {
 	private final Logger LOGGER = LoggerFactory.getLogger(this.getClass());
@@ -41,15 +38,18 @@ public class TransferServiceImpl implements TransferService {
 				transferRestModel.getRecepientId(), transferRestModel.getAmount());
 
 		try {
-			kafkaTemplate.send(environment.getProperty("withdraw-money-topic", "withdraw-money-topic"),
-					withdrawalEvent);
-			LOGGER.info("Sent event to withdrawal topic.");
+			kafkaTemplate.executeInTransaction(operations -> {
+				operations.send(environment.getProperty("withdraw-money-topic", "withdraw-money-topic"),
+						withdrawalEvent);
+				LOGGER.info("Sent event to withdrawal topic.");
 
-			// Business logic that causes and error
-			callRemoteServce();
+				// Fail the Kafka transaction if the remote call fails.
+				callRemoteService();
 
-			kafkaTemplate.send(environment.getProperty("deposit-money-topic", "deposit-money-topic"), depositEvent);
-			LOGGER.info("Sent event to deposit topic");
+				operations.send(environment.getProperty("deposit-money-topic", "deposit-money-topic"), depositEvent);
+				LOGGER.info("Sent event to deposit topic");
+				return true;
+			});
 
 		} catch (Exception ex) {
 			LOGGER.error(ex.getMessage(), ex);
@@ -59,12 +59,12 @@ public class TransferServiceImpl implements TransferService {
 		return true;
 	}
 
-	private ResponseEntity<String> callRemoteServce() throws Exception {
+	private ResponseEntity<String> callRemoteService() {
 		String requestUrl = "http://localhost:8082/response/200";
 		ResponseEntity<String> response = restTemplate.exchange(requestUrl, HttpMethod.GET, null, String.class);
 
 		if (response.getStatusCode().value() == HttpStatus.SERVICE_UNAVAILABLE.value()) {
-			throw new Exception("Destination Microservice not availble");
+			throw new TransferServiceException("Destination Microservice not availble");
 		}
 
 		if (response.getStatusCode().value() == HttpStatus.OK.value()) {

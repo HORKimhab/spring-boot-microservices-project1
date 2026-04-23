@@ -160,6 +160,67 @@ bash bin/kafka-console-consumer.sh \
   - Synchronous
   - Asynchronous
 
+## Init Apache Kafka Local Transactions With KafkaTemplate
+
+This project initializes local Kafka transactions in `TransferService` by combining:
+
+- a producer transaction id prefix
+- a transaction-capable `DefaultKafkaProducerFactory`
+- `KafkaTemplate`
+- `KafkaTransactionManager`
+- `KafkaTemplate.executeInTransaction(...)`
+
+Configuration used by this project:
+
+```properties
+spring.kafka.producer.transaction-id-prefix=transfer-service-${random.value}-
+```
+
+Producer and transaction manager setup:
+
+```java
+@Bean
+ProducerFactory<String, Object> producerFactory() {
+    DefaultKafkaProducerFactory<String, Object> producerFactory =
+            new DefaultKafkaProducerFactory<>(producerConfigs());
+    producerFactory.setTransactionIdPrefix(transactionIdPrefix);
+    return producerFactory;
+}
+
+@Bean
+KafkaTemplate<String, Object> kafkaTemplate(ProducerFactory<String, Object> producerFactory) {
+    return new KafkaTemplate<>(producerFactory);
+}
+
+@Bean
+KafkaTransactionManager<String, Object> kafkaTransactionManager(
+        ProducerFactory<String, Object> producerFactory) {
+    return new KafkaTransactionManager<>(producerFactory);
+}
+```
+
+Service usage:
+
+```java
+public boolean transfer(TransferRestModel transferRestModel) {
+    kafkaTemplate.executeInTransaction(operations -> {
+        operations.send("withdraw-money-topic", withdrawalEvent);
+        callRemoteService();
+        operations.send("deposit-money-topic", depositEvent);
+        return true;
+    });
+    return true;
+}
+```
+
+Important behavior:
+
+- Kafka creates a transactional producer when the transaction starts
+- records sent with `KafkaTemplate` stay invisible to `READ_COMMITTED` consumers until commit
+- if the method throws an exception, the transaction is rolled back and consumers do not receive those records
+
+In this project, that is why a failed `POST /transfers` no longer produces a visible withdrawal event in `WithdrawalService`.
+
 ## Note
 
 <!-- Waits for an acknowledgement from all brokers -->
