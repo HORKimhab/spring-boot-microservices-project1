@@ -399,3 +399,5 @@ bash bin/kafka-consumer-groups.sh \
 - With 3 partitions, Kafka can actively assign work to up to 3 consumers in the same group for that topic.
 - Access h2-console-db: http://localhost:{Port_Number}/h2-console
 - Continue: 15.09 (1.48)
+- 02. Introduction to demo projects & Source Code.mp4 - (0.54)
+
