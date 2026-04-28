@@ -7,5 +7,6 @@
         "vscjava.vscode-maven",
         "redhat.java",
         "openai.chatgpt",
+        "eamodio.gitlens",
     ]
 }
