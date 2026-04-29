@@ -21,7 +21,7 @@ Commands:
 Examples:
   bash run
   bash run clean
-  bash run mi
+  bash run mi/install
   bash run --help
 EOF
 }
@@ -51,7 +51,7 @@ elif [[ "$1" == "clean" ]]; then
     MVN_CMD="./mvnw clean spring-boot:run"
     # Shift so any additional args go to mvnw
     shift
-elif [[ "$1" == "mi" ]]; then
+elif [[ "$1" == "mi" || "$1" == "install" ]]; then
     shift
     ./mvnw install "$@"
     exit $?
