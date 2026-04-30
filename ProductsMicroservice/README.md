@@ -1,0 +1,1 @@
+- debug: bash run test -Dtest={functionName} (e.g functionName must match function test like ProductsServiceIntegrationTest)

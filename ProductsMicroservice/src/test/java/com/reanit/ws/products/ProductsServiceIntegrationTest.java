@@ -37,12 +37,12 @@ import org.springframework.test.context.ActiveProfiles;
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test") // application-test.properties
 @EmbeddedKafka(partitions=3, count=3, controlledShutdown=true)
-@SpringBootTest(properties="spring.kafka.producer.bootstrap-servers=${spring.emedded.kafka.brokers}")
+@SpringBootTest(properties="spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}")
 public class ProductsServiceIntegrationTest {
 
     @Test
     void testCreateProduct_whenGivenValidProductDetails_successfullSendsKafakaMessage(){
-        
+
     }
 
 }
