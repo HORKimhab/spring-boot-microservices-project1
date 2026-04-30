@@ -1,5 +1,6 @@
 package com.reanit.ws.products;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
@@ -38,5 +39,10 @@ import org.springframework.test.context.ActiveProfiles;
 @EmbeddedKafka(partitions=3, count=3, controlledShutdown=true)
 @SpringBootTest(properties="spring.kafka.producer.bootstrap-servers=${spring.emedded.kafka.brokers}")
 public class ProductsServiceIntegrationTest {
+
+    @Test
+    void testCreateProduct_whenGivenValidProductDetails_successfullSendsKafakaMessage(){
+        
+    }
 
 }
