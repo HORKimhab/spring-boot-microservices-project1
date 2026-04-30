@@ -43,6 +43,11 @@ public class ProductsServiceIntegrationTest {
     @Test
     void testCreateProduct_whenGivenValidProductDetails_successfullSendsKafakaMessage(){
 
+        // Arrange 
+
+        // Act 
+
+        // Assert
     }
 
 }
