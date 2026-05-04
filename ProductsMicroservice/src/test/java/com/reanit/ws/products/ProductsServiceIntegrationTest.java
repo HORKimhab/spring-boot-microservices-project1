@@ -1,11 +1,17 @@
 package com.reanit.ws.products;
 
+import java.math.BigDecimal;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
+
+import com.reanit.ws.products.rest.CreateProductRestModel;
+import com.reanit.ws.products.service.ProductService;
 
 
 /**
@@ -40,12 +46,24 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(properties="spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}")
 public class ProductsServiceIntegrationTest {
 
+    @Autowired
+    private ProductService productService;
+
     @Test
-    void testCreateProduct_whenGivenValidProductDetails_successfullSendsKafakaMessage(){
+    void testCreateProduct_whenGivenValidProductDetails_successfullSendsKafakaMessage() throws Exception{
 
         // Arrange 
+        String title="iphone 17 pro max"; 
+        BigDecimal price = new BigDecimal(600);
+        Integer quantity = 1; 
+
+        CreateProductRestModel createProductRestModel = new CreateProductRestModel(); 
+        createProductRestModel.setTitle(title);
+        createProductRestModel.setPrice(price);
+        createProductRestModel.setQuantity(quantity);
 
         // Act 
+        productService.createProduct(createProductRestModel);
 
         // Assert
     }
