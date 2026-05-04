@@ -8,5 +8,7 @@
         "redhat.java",
         "openai.chatgpt",
         "eamodio.gitlens",
+        "vscjava.vscode-java-test",
+        "vscjava.vscode-java-debug",
     ]
 }

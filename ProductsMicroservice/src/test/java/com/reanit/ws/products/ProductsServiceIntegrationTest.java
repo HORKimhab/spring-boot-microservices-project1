@@ -4,11 +4,14 @@ import java.math.BigDecimal;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.AfterAll;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
@@ -19,7 +22,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.listener.MessageListener;
-import org.springframework.kafka.listener.adapter.KafkaMessageHandlerMethodFactory;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
 import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
@@ -29,7 +31,6 @@ import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import com.reanit.ws.core.ProductCreatedEvent;
-// import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.reanit.ws.products.rest.CreateProductRestModel;
 import com.reanit.ws.products.service.ProductService;
 
@@ -62,8 +63,16 @@ import com.reanit.ws.products.service.ProductService;
 @DirtiesContext
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @ActiveProfiles("test") // application-test.properties
-@EmbeddedKafka(partitions=3, count=3, controlledShutdown=true)
-@SpringBootTest(properties="spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}")
+@EmbeddedKafka(
+    partitions = 3,
+    count = 3,
+    controlledShutdown = true,
+    topics = { "product-created-events-topic", "topic2" }
+)
+@SpringBootTest(properties = {
+    "spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}",
+    "spring.kafka.producer.bootstrap-servers=${spring.embedded.kafka.brokers}"
+})
 public class ProductsServiceIntegrationTest {
 
     @Autowired
@@ -80,13 +89,15 @@ public class ProductsServiceIntegrationTest {
 
     @BeforeAll 
     void setUp(){
-        DefaultKafkaConsumerFactory<String, Object> consumerFactory = new DefaultKafkaConsumerFactory<>(getConsumerProperties()); 
-        ContainerProperties containerProperties = new ContainerProperties(environment.getProperty("product-created-events-topic-name"));
+        DefaultKafkaConsumerFactory<String, ProductCreatedEvent> consumerFactory =
+            new DefaultKafkaConsumerFactory<>(getConsumerProperties());
+        ContainerProperties containerProperties =
+            new ContainerProperties(environment.getProperty("app.kafka.topics.product-created"));
         container = new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
         records = new LinkedBlockingDeque<>();
         container.setupMessageListener((MessageListener<String, ProductCreatedEvent>) records::add);
-
-        ContainerTestUtils.waitForAssignment(containerProperties, embeddedKafkaBroker.getPartitionsPerTopic());
+        container.start();
+        ContainerTestUtils.waitForAssignment(container, embeddedKafkaBroker.getPartitionsPerTopic());
     }
 
     @Test
@@ -106,6 +117,15 @@ public class ProductsServiceIntegrationTest {
         productService.createProduct(createProductRestModel);
 
         // Assert
+        ConsumerRecord<String, ProductCreatedEvent> message = records.poll(3000, TimeUnit.MILLISECONDS);
+        assertNotNull(message);
+        assertNotNull(message.key());
+
+        ProductCreatedEvent productCreatedEvent = message.value(); 
+
+        assertEquals(createProductRestModel.getQuantity(), productCreatedEvent.getQuantity());
+        assertEquals(createProductRestModel.getTitle(), productCreatedEvent.getTitle());
+        assertEquals(createProductRestModel.getPrice(), productCreatedEvent.getPrice());
     }
 
     private Map<String, Object> getConsumerProperties() {
@@ -122,7 +142,7 @@ public class ProductsServiceIntegrationTest {
 
     @AfterAll
     void tearDown(){
-        container.stop(); 
+        container.stop();
     }
 
 }
