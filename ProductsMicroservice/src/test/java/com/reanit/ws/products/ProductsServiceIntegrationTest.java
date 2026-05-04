@@ -1,15 +1,23 @@
 package com.reanit.ws.products;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.common.serialization.StringDeserializer;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.core.env.Environment;
+import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
+import org.springframework.kafka.support.serializer.JacksonJsonDeserializer;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
 import org.springframework.kafka.test.context.EmbeddedKafka;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
+// import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.reanit.ws.products.rest.CreateProductRestModel;
 import com.reanit.ws.products.service.ProductService;
 
@@ -49,6 +57,12 @@ public class ProductsServiceIntegrationTest {
     @Autowired
     private ProductService productService;
 
+    @Autowired
+    private EmbeddedKafkaBroker embeddedKafkaBroker;
+
+    @Autowired
+    Environment environment; 
+
     @Test
     void testCreateProduct_whenGivenValidProductDetails_successfullSendsKafakaMessage() throws Exception{
 
@@ -66,6 +80,18 @@ public class ProductsServiceIntegrationTest {
         productService.createProduct(createProductRestModel);
 
         // Assert
+    }
+
+    private Map<String, Object> getConsumerProperties() {
+        return Map.of(
+            ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, embeddedKafkaBroker.getBrokersAsString(), 
+            ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class, 
+            ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class, 
+            ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JacksonJsonDeserializer.class,
+            ConsumerConfig.GROUP_ID_CONFIG, environment.getProperty("spring.kafka.consumer.group-id"),
+            JacksonJsonDeserializer.TRUSTED_PACKAGES, environment.getProperty("spring.kafka.consumer.properties.spring.json.trusted.packages"),
+            ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, environment.getProperty("spring.kafka.consumer.auto-offset-reset")
+        ); 
     }
 
 }
