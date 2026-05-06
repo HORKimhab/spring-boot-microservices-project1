@@ -24,14 +24,9 @@ Commands:
   --help, -h  Show this help message
   clean       Run clean and start the app
   clean-test  Run mvn clean test
-  clean-owasp, co
-               Run clean and OWASP Dependency-Check scan
-  deps        Print Maven dependency tree for vulnerability tracing
-  fix-deps    Show available dependency and plugin updates
   hard-clean  Remove target and local project Maven cache, then start the app
   test        Run unit/integration tests
   verify      Run mvn clean verify
-  owasp       Run OWASP Dependency-Check scan
   <none>      Start the app
 
 Examples:
@@ -39,23 +34,9 @@ Examples:
   bash run clean
   bash run clean-test
   bash run verify
-  bash run owasp
-  bash run clean-owasp
-  bash run deps
-  bash run fix-deps
   bash run test
   bash run --help
 EOF
-}
-
-run_owasp_check() {
-    read -s -p "Enter NVD API Key: " NVD_API_KEY
-    echo
-    export NVD_API_KEY
-    ./mvnw clean verify org.owasp:dependency-check-maven:check \
-    -Dnvd.api.key="$NVD_API_KEY" \
-    -Ddependency-check.offline=true
-    unset NVD_API_KEY
 }
 
 # ./mvnw spring-boot:run \
@@ -73,27 +54,6 @@ elif [[ "$1" == "clean" ]]; then
     MVN_CMD="./mvnw clean spring-boot:run"
     # Shift so any additional args go to mvnw
     shift
-elif [[ "$1" == "check" ]]; then
-    shift
-    run_owasp_check "$@"
-    exit $?
-    # Shift so any additional args go to mvnw
-elif [[ "$1" == "owasp" ]]; then
-    shift
-    run_owasp_check "$@"
-    exit $?
-elif [[ "$1" == "clean-owasp" || "$1" == "co" ]]; then
-    shift
-    run_owasp_check "$@"
-    exit $?
-elif [[ "$1" == "deps" ]]; then
-    shift
-    ./mvnw dependency:tree "$@"
-    exit $?
-elif [[ "$1" == "fix-deps" ]]; then
-    shift
-    ./mvnw versions:display-dependency-updates versions:display-plugin-updates "$@"
-    exit $?
 elif [[ "$1" == "test" ]]; then
     shift
     ./mvnw test "$@"
