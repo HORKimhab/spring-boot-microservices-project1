@@ -398,6 +398,13 @@ bash bin/kafka-consumer-groups.sh \
 - Offsets are stored in Kafka, typically in the `__consumer_offsets` internal topic.
 - With 3 partitions, Kafka can actively assign work to up to 3 consumers in the same group for that topic.
 - Access h2-console-db: http://localhost:{Port_Number}/h2-console
-- Continue: 15.09 (1.48)
-- 02. Introduction to demo projects & Source Code.mp4 - (0.54)
+
+### Choreography-Based Saga (Kafka)
+
+- ប្រើ Apache Kafka ជា event broker
+- មិនមាន controller កណ្ដាល (no orchestrator)
+- Service នីមួយៗ:
+  - 📥 Subscribe event
+  - ⚙️ Process
+  - 📤 Publish event បន្ត
 
