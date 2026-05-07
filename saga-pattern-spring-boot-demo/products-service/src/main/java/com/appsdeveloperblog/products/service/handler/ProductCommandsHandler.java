@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.appsdeveloperblog.core.dto.Product;
 import com.appsdeveloperblog.core.dto.commands.ReserveProductCommand;
+import com.appsdeveloperblog.core.dto.events.ProductReservationFailedEvent;
 import com.appsdeveloperblog.core.dto.events.ProductReservedEvent;
 import com.appsdeveloperblog.products.service.ProductService;
 
@@ -46,6 +47,13 @@ public class ProductCommandsHandler {
         } catch (Exception e) {
             // throw  new RuntimeErrorException(e);
             logger.error(e.getLocalizedMessage(), e);
+
+            ProductReservationFailedEvent productReservationFailedEvent = new ProductReservationFailedEvent(
+                command.getProductId(), 
+                command.getOrderId(), 
+                command.getProductQuantity()
+            ); 
+            kafkaTemplate.send(productEventsTopicName, productReservationFailedEvent);
         }
       
     }
