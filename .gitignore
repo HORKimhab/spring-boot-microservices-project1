@@ -38,6 +38,7 @@ replay_pid*
 !.gitignore
 logs/*
 !logs/.gitignore
+kafka-volumes
 
 # bin
 # config

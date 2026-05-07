@@ -10,6 +10,7 @@ import jakarta.validation.Valid;
 import org.springframework.beans.BeanUtils;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.UUID;
@@ -31,7 +32,12 @@ public class OrdersController {
     public CreateOrderResponse placeOrder(@RequestBody @Valid CreateOrderRequest request) {
         var order = new Order();
         BeanUtils.copyProperties(request, order);
-        Order createdOrder = orderService.placeOrder(order);
+        Order createdOrder;
+        try {
+            createdOrder = orderService.placeOrder(order);
+        } catch (Exception ex) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Failed to place order", ex);
+        }
 
         var response = new CreateOrderResponse();
         BeanUtils.copyProperties(createdOrder, response);

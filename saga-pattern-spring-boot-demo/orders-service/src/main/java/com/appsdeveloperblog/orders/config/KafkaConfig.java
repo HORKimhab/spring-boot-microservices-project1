@@ -22,7 +22,7 @@ public class KafkaConfig {
         return new KafkaTemplate<>(producerFactory);
     }
 
-       @Bean
+    @Bean
     NewTopic createOrdersEventsTopic() {
         return TopicBuilder.name(ordersEventsTopicName)
                 .partitions(TOPIC_PARTITIONS)
