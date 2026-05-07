@@ -399,6 +399,8 @@ bash bin/kafka-consumer-groups.sh \
 - With 3 partitions, Kafka can actively assign work to up to 3 consumers in the same group for that topic.
 - Access h2-console-db: http://localhost:{Port_Number}/h2-console
 - ./kafka-console-consumer.sh --topic orders-events --bootstrap-server localhost:9092
+- ./kafka-console-consumer.sh --topic products-commands --bootstrap-server localhost:9092
+- /kafka-console-consumer.sh --topic products-commands --bootstrap-server localhost:9092
 
 ### Choreography-Based Saga (Kafka)
 
