@@ -3,6 +3,7 @@ package com.appsdeveloperblog.products.service.handler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.kafka.annotation.KafkaHandler;
 import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.messaging.handler.annotation.Payload;
@@ -30,7 +31,7 @@ public class ProductCommandsHandler {
         this.kafkaTemplate = kafkaTemplate; 
     }
 
-    @KafkaListener
+    @KafkaHandler
     public void handleCommand(@Payload ReserveProductCommand command){
 
         try {
