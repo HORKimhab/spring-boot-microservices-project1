@@ -9,17 +9,25 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.appsdeveloperblog.core.dto.commands.ProcessPaymentCommand;
 import com.appsdeveloperblog.core.dto.commands.ReserveProductCommand;
 import com.appsdeveloperblog.core.dto.events.OrderCreatedEvent;
+import com.appsdeveloperblog.core.dto.events.ProductReservedEvent;
 import com.appsdeveloperblog.core.types.OrderStatus;
 import com.appsdeveloperblog.orders.service.OrderHistoryService;
 
 @Component
-@KafkaListener(topics={"${orders.events.topic.name}"})
+@KafkaListener(topics={
+    "${orders.events.topic.name}",
+    "${products.events.topic.name}",
+})
 public class OrderSaga {
 
     @Value("${products.commands.topic.name}")
     private String productsCommandsTopicName;
+
+    @Value("${payments.commands.topic.name}")
+    private String paymentsCommandsTopicName;
 
     private final KafkaTemplate<String, Object> kafkaTemplate; 
     private final OrderHistoryService orderHistoryService; 
@@ -48,6 +56,16 @@ public class OrderSaga {
                 "[OrderSaga] Failed to add history order", ex
             );
         }
+    }
+
+    @KafkaHandler
+    public void handleEvent(@Payload ProductReservedEvent event){
+
+        ProcessPaymentCommand processPaymentCommand = new ProcessPaymentCommand(
+            event.getOrderId(), event.getProductId(), event.getProductPrice(), event.getProductQuantity()
+        );
+
+        kafkaTemplate.send(paymentsCommandsTopicName, processPaymentCommand);
     }
 
 }
