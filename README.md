@@ -401,6 +401,7 @@ bash bin/kafka-consumer-groups.sh \
 - ./kafka-console-consumer.sh --topic orders-events --bootstrap-server localhost:9092
 - ./kafka-console-consumer.sh --topic products-commands --bootstrap-server localhost:9092
 - /kafka-console-consumer.sh --topic products-commands --bootstrap-server localhost:9092
+- ./kafka-console-consumer.sh --topic products-events --bootstrap-server localhost:9092
 
 ### Choreography-Based Saga (Kafka)
 
