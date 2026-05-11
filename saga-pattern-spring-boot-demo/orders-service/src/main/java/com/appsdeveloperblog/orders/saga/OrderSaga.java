@@ -14,6 +14,7 @@ import com.appsdeveloperblog.core.dto.commands.ProcessPaymentCommand;
 import com.appsdeveloperblog.core.dto.commands.ReserveProductCommand;
 import com.appsdeveloperblog.core.dto.events.OrderApprovedEvent;
 import com.appsdeveloperblog.core.dto.events.OrderCreatedEvent;
+import com.appsdeveloperblog.core.dto.events.PaymentFailedEvent;
 import com.appsdeveloperblog.core.dto.events.PaymentProcessedEvent;
 import com.appsdeveloperblog.core.dto.events.ProductReservedEvent;
 import com.appsdeveloperblog.core.types.OrderStatus;
@@ -85,6 +86,11 @@ public class OrderSaga {
     @KafkaHandler 
     public void handleEvent(@Payload OrderApprovedEvent event){
         orderHistoryService.add(event.getOrderId(), OrderStatus.APPROVED);
+    }
+
+    @KafkaHandler 
+    public void handleEvent(@Payload PaymentFailedEvent event){
+        // orderHistoryService.add(event.getOrderId(), OrderStatus.APPROVED);
     }
 
 }
