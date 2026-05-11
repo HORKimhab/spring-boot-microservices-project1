@@ -12,6 +12,8 @@ import org.springframework.web.server.ResponseStatusException;
 import com.appsdeveloperblog.core.dto.commands.ApproveOrderCommand;
 import com.appsdeveloperblog.core.dto.commands.CancelProductReservationCommand;
 import com.appsdeveloperblog.core.dto.commands.ProcessPaymentCommand;
+import com.appsdeveloperblog.core.dto.commands.ProductReservationCancelledEvent;
+import com.appsdeveloperblog.core.dto.commands.RejectOrderCommand;
 import com.appsdeveloperblog.core.dto.commands.ReserveProductCommand;
 import com.appsdeveloperblog.core.dto.events.OrderApprovedEvent;
 import com.appsdeveloperblog.core.dto.events.OrderCreatedEvent;
@@ -100,4 +102,12 @@ public class OrderSaga {
     
     }
 
+    @KafkaHandler
+    public void handleCommand(@Payload ProductReservationCancelledEvent event){
+
+        RejectOrderCommand rejectOrderCommand = new RejectOrderCommand(event.getOrderId());
+        kafkaTemplate.send(ordersCommandsTopicName, rejectOrderCommand);
+
+        orderHistoryService.add(event.getOrderId(), OrderStatus.REJECTED);
+    }
 }
