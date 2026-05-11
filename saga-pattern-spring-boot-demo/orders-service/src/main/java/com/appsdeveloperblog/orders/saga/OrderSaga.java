@@ -9,9 +9,11 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.appsdeveloperblog.core.dto.commands.ApproveOrderCommand;
 import com.appsdeveloperblog.core.dto.commands.ProcessPaymentCommand;
 import com.appsdeveloperblog.core.dto.commands.ReserveProductCommand;
 import com.appsdeveloperblog.core.dto.events.OrderCreatedEvent;
+import com.appsdeveloperblog.core.dto.events.PaymentProcessedEvent;
 import com.appsdeveloperblog.core.dto.events.ProductReservedEvent;
 import com.appsdeveloperblog.core.types.OrderStatus;
 import com.appsdeveloperblog.orders.service.OrderHistoryService;
@@ -20,6 +22,7 @@ import com.appsdeveloperblog.orders.service.OrderHistoryService;
 @KafkaListener(topics={
     "${orders.events.topic.name}",
     "${products.events.topic.name}",
+    "${payments.events.topic.name}",
 })
 public class OrderSaga {
 
@@ -28,6 +31,9 @@ public class OrderSaga {
 
     @Value("${payments.commands.topic.name}")
     private String paymentsCommandsTopicName;
+
+    @Value("${orders.commands.topic.name}")
+    private String ordersCommandsTopicName;
 
     private final KafkaTemplate<String, Object> kafkaTemplate; 
     private final OrderHistoryService orderHistoryService; 
@@ -66,6 +72,13 @@ public class OrderSaga {
         );
 
         kafkaTemplate.send(paymentsCommandsTopicName, processPaymentCommand);
+    }
+
+    @KafkaHandler 
+    public void handleEvent(@Payload PaymentProcessedEvent event){
+        
+        ApproveOrderCommand approveOrderCommand = new ApproveOrderCommand(event.getOrderId());
+        kafkaTemplate.send(ordersCommandsTopicName, approveOrderCommand);
     }
 
 }
