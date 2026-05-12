@@ -5,6 +5,7 @@ import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import com.appsdeveloperblog.core.dto.commands.ApproveOrderCommand;
+import com.appsdeveloperblog.core.dto.commands.RejectOrderCommand;
 import com.appsdeveloperblog.orders.service.OrderService;
 
 @Component
@@ -20,6 +21,11 @@ public class OrderCommandsHandler {
     @KafkaListener
     public void handleCommand(@Payload ApproveOrderCommand approveOrderCommand){
         orderService.approveOrder(approveOrderCommand.getOrderId());
+    }
+
+    @KafkaListener
+    public void handleCommand(@Payload RejectOrderCommand rejectOrderCommand){
+        orderService.rejectOrder(rejectOrderCommand.getOrderId());
     }
 
 }
